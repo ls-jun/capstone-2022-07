@@ -157,24 +157,24 @@ def api_search(tuple_list, stock):
         # for index, item in enumerate(temp['items']):
         #     print(index+1, item['title'], item['link'], item['description'],item['pubDate'])
 
-        # TODO
         for dict in temp['items']:
             title  = text_clean(dict['title'])
 
             #학습데이터를 통해서 라벨링
-            temp_title = okt.morphs(str(title), stem=True)
-            temp_title = [word for word in temp_title if not word in stopwords]
-            temp_title = tokenizer.texts_to_sequences(temp_title)
+            X_test=[]
+            temp_X = okt.morphs(str(title), stem=True) #토큰화
+            temp_X = [word for word in temp_X if not word in stopwords] #안쓰는 말 제거
+            X_test.append(temp_X)
+            X_test = tokenizer.texts_to_sequences(X_test)
+            predict= model.predict(X_test)
             
-            predict = model.predict(temp_title)
-            predict_labels = np.argmax(predict, axis=1)
             # 호악재 예측값 저장
-            pov_or_neg = predict_labels
+            pov_or_neg = np.argmax(predict,axis=1)[0]
 
             date = formatting_date(dict['pubDate'])
 
+            # TODO  쿼링 코드
             '''
-            # 쿼링 코드
             #
             # 마지막 temp3 부분을 올라갈 문서의 제목으로 바꿔야함.
             news_temp = db.collection(u'stock').document(stock).collection(u'news').document(u'temp3')
@@ -184,6 +184,13 @@ def api_search(tuple_list, stock):
                 u'label': pov_or_neg,
                 u'url':dict['originallink']
             })
+            # stock_temp = db.collection(u'stock').document(u'카카오')
+            # stock_temp.set({
+            #     u'DayNewsCount': "하루뉴스개수",
+            #     u'TimeNewsCount': "시간당뉴스개수",
+            #     u'TimePerPositiveNewsCount': "시간당뉴스개수",
+            #     u'TimePerNegativeNewsCount': "시간당뉴스개수",
+            # })
             '''
             tuple_list.append((stock ,title ,dict['originallink'] ,date ,pov_or_neg))
                 # print(stock ,title ,dict['originallink'] ,date ,pov_or_neg)
@@ -210,18 +217,8 @@ def run(reset):
             tuple_list=[]
             tuple_list.append(("stock" ,"title" ,"url" ,"date" ,"pov_or_neg"))
             num = len(company)
-            count=0
-            tmp_time = time.time()
             for i in range(num):
                 api_search(tuple_list, company[i])
-                count+=1    
-                #api는 초당 10개라서 딜레이를 주었음
-                if count==10:
-                    time_10 = time.time()-tmp_time
-                    take_a_nap = 1-time_10 if  0 < (time_10) and (time_10) < 1 else 0
-                    time.sleep(take_a_nap)
-                    count=0
-                    tmp_time=time.time()
 
             # 쿼링 포함 15분 제한
             end = time.time()
