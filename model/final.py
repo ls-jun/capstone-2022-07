@@ -184,7 +184,7 @@ def api_search(tuple_list, stock):
                 u'label': pov_or_neg,
                 u'url':dict['originallink']
             })
-            # stock_temp = db.collection(u'stock').document(u'카카오')
+            # stock_temp = db.collection(u'stock').document(stock)
             # stock_temp.set({
             #     u'DayNewsCount': "하루뉴스개수",
             #     u'TimeNewsCount': "시간당뉴스개수",
