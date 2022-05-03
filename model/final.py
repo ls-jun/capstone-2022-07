@@ -188,8 +188,8 @@ def api_search(tuple_list, stock):
             # stock_temp.set({
             #     u'DayNewsCount': "하루뉴스개수",
             #     u'TimeNewsCount': "시간당뉴스개수",
-            #     u'TimePerPositiveNewsCount': "시간당뉴스개수",
-            #     u'TimePerNegativeNewsCount': "시간당뉴스개수",
+            #     u'TimePerPositiveNewsCount': "시간당 긍정뉴스개수",
+            #     u'TimePerNegativeNewsCount': "시간당 부정뉴스개수",
             # })
             '''
             tuple_list.append((stock ,title ,dict['originallink'] ,date ,pov_or_neg))
